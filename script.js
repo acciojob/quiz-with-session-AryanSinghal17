@@ -26,19 +26,28 @@ const questions = [
   },
 ];
 
-
-
 const questionsElement = document.getElementById("questions");
 const submitButton = document.getElementById("submit");
 const scoreElement = document.getElementById("score");
 
-let userAnswers = new Array(questions.length).fill("");
+// Load answers from sessionStorage
+let userAnswers =
+  JSON.parse(sessionStorage.getItem("userAnswers")) ||
+  new Array(questions.length).fill("");
 
+// Display stored score from localStorage
+const savedScore = localStorage.getItem("score");
 
+if (savedScore === null) {
+  scoreElement.textContent = "Your Score is 0 out of 5";
+} else {
+  scoreElement.textContent = `Your Score is ${savedScore} out of 5`;
+}
 
-
-// Display the quiz questions and choices
+// Render questions
 function renderQuestions() {
+  questionsElement.innerHTML = "";
+
   for (let i = 0; i < questions.length; i++) {
     const question = questions[i];
 
@@ -46,7 +55,6 @@ function renderQuestions() {
 
     const questionText = document.createElement("h3");
     questionText.textContent = question.question;
-
     questionElement.appendChild(questionText);
 
     for (let j = 0; j < question.choices.length; j++) {
@@ -57,13 +65,18 @@ function renderQuestions() {
       choiceElement.name = `question-${i}`;
       choiceElement.value = choice;
 
+      // Restore selected answer
       if (userAnswers[i] === choice) {
         choiceElement.checked = true;
       }
 
-      // Save selected answer
+      // Save answer in sessionStorage
       choiceElement.addEventListener("change", () => {
         userAnswers[i] = choice;
+        sessionStorage.setItem(
+          "userAnswers",
+          JSON.stringify(userAnswers)
+        );
       });
 
       const label = document.createElement("label");
@@ -78,8 +91,7 @@ function renderQuestions() {
   }
 }
 
-
-
+// Submit button
 submitButton.addEventListener("click", () => {
   let score = 0;
 
@@ -88,12 +100,11 @@ submitButton.addEventListener("click", () => {
       score++;
     }
   }
-	localStorage.setItem("score", score);
-  scoreElement.textContent = `Your Score is ${score}/${questions.length} out of 5`;
+
+  localStorage.setItem("score", score);
+
+  scoreElement.textContent =
+    `Your Score is ${score}/${questions.length} out of 5`;
 });
-if(localStorage.getItem(score) === null){
-scoreElement.textContent = `Your Score is 0 out of 5`;
-}else{
-scoreElement.textContent = `Your Score is  ${localStorage.getItem(score)} out of 5`;
-}
+
 renderQuestions();
