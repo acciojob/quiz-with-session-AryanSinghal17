@@ -91,5 +91,5 @@ submitButton.addEventListener("click", () => {
 	localStorage.setItem("score", score);
   scoreElement.textContent = `Your Score is ${score}/${questions.length} out of 5`;
 });
-
+scoreElement.textContent = `Your Score is  ${localStorage.getItem(score)} out of 5`;
 renderQuestions();
